@@ -1,5 +1,5 @@
 package model;
 
-public enum Categorie {
+public enum Category {
     Apartamente, Case, Spatii_comerciale
 }

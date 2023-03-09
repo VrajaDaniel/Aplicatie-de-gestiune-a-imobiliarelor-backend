@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public class Locatie {
-    private double latitutidine;
-    private double longitudine;
+public class Location {
+    private double latitude;
+    private double longitude;
 }

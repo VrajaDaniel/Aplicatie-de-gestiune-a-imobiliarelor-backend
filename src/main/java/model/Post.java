@@ -9,34 +9,34 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDate;
 
-@Entity(name = "anunt")
+@Entity(name = "post")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class Anunt {
+public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @GenericGenerator(name = "native", strategy = "native")
     private Long id;
 
-    private String titlu;
-    private String descriere;
-    private LocalDate data;
-    private boolean deschis;
-    private String oras;
-    private double pret;
-    private double suprafataUtila;
-    private int etaj;
+    private String title;
+    private String description;
+    private LocalDate date;
+    private boolean open;
+    private String city;
+    private double price;
+    private double usefulSurface;
+    private int floor;
 
 
     @Enumerated(EnumType.STRING)
-    private Categorie categorie;
+    private Category category;
 
     @Embedded
-    private Locatie locatie;
+    private Location location;
 
     @ManyToOne
-    private Utilizator utilizator;
+    private User user;
 }

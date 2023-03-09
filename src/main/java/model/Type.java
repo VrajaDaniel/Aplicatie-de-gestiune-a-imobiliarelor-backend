@@ -1,5 +1,5 @@
 package model;
 
-public enum Tip {
+public enum Type {
     Vanzare, Inchiriere
 }

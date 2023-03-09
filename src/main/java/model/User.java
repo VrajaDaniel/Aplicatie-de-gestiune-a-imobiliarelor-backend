@@ -5,25 +5,25 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import java.util.List;
 
-@Entity(name = "utilizator")
+@Entity(name = "user")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class Utilizator {
+public class User {
 
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
         @GenericGenerator(name = "native", strategy = "native")
         private Long id;
-        private String prenume;
-        private String nume;
-        private String telefon;
+        private String firstName;
+        private String lastName;
+        private String phoneNumber;
         private String email;
-        private String parola;
-        private String rol;
+        private String password;
+        private String role;
 
-        @OneToMany(mappedBy = "utilizator")
-        private List<Anunt> anuntSet;
+        @OneToMany(mappedBy = "user")
+        private List<Post>postList ;
 
 }
