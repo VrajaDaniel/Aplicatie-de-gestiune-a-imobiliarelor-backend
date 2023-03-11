@@ -29,10 +29,14 @@ public class Post {
     private double price;
     private double usefulSurface;
     private int floor;
-
+    private int numberRooms;
+    private int constructionYear;
 
     @Enumerated(EnumType.STRING)
     private Category category;
+
+    @Enumerated(EnumType.STRING)
+    private Type type;
 
     @Embedded
     private Location location;
