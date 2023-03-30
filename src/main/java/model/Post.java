@@ -24,7 +24,6 @@ public class Post {
     private String title;
     private String description;
     private LocalDate date;
-    private boolean open;
     private String city;
     private double price;
     private double usefulSurface;
