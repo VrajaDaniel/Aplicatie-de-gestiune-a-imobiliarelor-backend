@@ -1,11 +1,11 @@
-package service;
+package licenta.backend.service;
 
 import lombok.AllArgsConstructor;
-import model.User;
-import model.exception.UserException;
-import model.validator.UserValidator;
+import licenta.backend.model.User;
+import licenta.backend.model.exception.UserException;
+import licenta.backend.model.validator.UserValidator;
 import org.springframework.stereotype.Service;
-import repository.UserRepository;
+import licenta.backend.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;

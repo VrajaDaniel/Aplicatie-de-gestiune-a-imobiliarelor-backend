@@ -1,11 +1,12 @@
-package model;
+package licenta.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
+import org.springframework.context.annotation.Primary;
+
 import java.util.List;
 
-@Entity(name = "user")
+@Entity(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -13,8 +14,7 @@ import java.util.List;
 public class User {
 
         @Id
-        @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-        @GenericGenerator(name = "native", strategy = "native")
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
         private String firstName;
         private String lastName;

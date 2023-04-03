@@ -1,7 +1,7 @@
-package service;
+package licenta.backend.service;
 
-import model.Location;
-import model.Post;
+import licenta.backend.model.Location;
+import licenta.backend.model.Post;
 
 public interface PostServiceInterface {
     Post addPost(Post post);

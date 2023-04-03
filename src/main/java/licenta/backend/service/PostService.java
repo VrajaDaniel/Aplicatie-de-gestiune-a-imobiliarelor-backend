@@ -1,9 +1,9 @@
-package service;
+package licenta.backend.service;
 
-import model.Location;
-import model.Post;
+import licenta.backend.model.Location;
+import licenta.backend.model.Post;
 import org.springframework.transaction.annotation.Transactional;
-import repository.PostRepository;
+import licenta.backend.repository.PostRepository;
 
 import java.util.Optional;
 
@@ -30,7 +30,6 @@ public class PostService implements PostServiceInterface{
         toUpdate.setTitle(edited.getTitle());
         toUpdate.setDescription(edited.getDescription());
         toUpdate.setDate(edited.getDate());
-        toUpdate.setOpen(edited.isOpen());
         toUpdate.setCity(edited.getCity());
         toUpdate.setPrice(edited.getPrice());
         toUpdate.setUsefulSurface(edited.getUsefulSurface());

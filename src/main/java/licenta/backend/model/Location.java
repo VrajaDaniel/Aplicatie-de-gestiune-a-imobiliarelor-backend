@@ -1,4 +1,4 @@
-package model;
+package licenta.backend.model;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

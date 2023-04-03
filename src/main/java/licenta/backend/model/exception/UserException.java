@@ -1,4 +1,4 @@
-package model.exception;
+package licenta.backend.model.exception;
 
 public class UserException extends Exception {
 

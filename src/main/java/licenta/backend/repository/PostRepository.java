@@ -1,6 +1,6 @@
-package repository;
+package licenta.backend.repository;
 
-import model.Post;
+import licenta.backend.model.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

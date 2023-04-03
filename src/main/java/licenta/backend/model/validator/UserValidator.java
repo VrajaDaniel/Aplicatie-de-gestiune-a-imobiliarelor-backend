@@ -1,6 +1,6 @@
-package model.validator;
+package licenta.backend.model.validator;
 
-import model.exception.UserException;
+import licenta.backend.model.exception.UserException;
 import org.springframework.stereotype.Component;
 
 import java.util.regex.Matcher;

@@ -1,7 +1,7 @@
-package service;
+package licenta.backend.service;
 
-import model.User;
-import model.exception.UserException;
+import licenta.backend.model.User;
+import licenta.backend.model.exception.UserException;
 
 import java.util.List;
 

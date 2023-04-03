@@ -1,4 +1,4 @@
-package model;
+package licenta.backend.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDate;
 
-@Entity(name = "post")
+@Entity(name = "posts")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -17,8 +17,7 @@ import java.time.LocalDate;
 public class Post {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-    @GenericGenerator(name = "native", strategy = "native")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String title;
