@@ -1,13 +1,14 @@
 package licenta.backend.model;
 
 import jakarta.persistence.*;
+import licenta.backend.configuration.ByteArrayConverter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity(name = "posts")
 @NoArgsConstructor
@@ -41,4 +42,7 @@ public class Post {
 
     @ManyToOne
     private User user;
+
+    @Convert(converter = ByteArrayConverter.class)
+    private List<byte[]> files;
 }

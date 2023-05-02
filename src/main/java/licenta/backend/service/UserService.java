@@ -1,18 +1,22 @@
 package licenta.backend.service;
 
-import lombok.AllArgsConstructor;
 import licenta.backend.model.User;
 import licenta.backend.model.exception.UserException;
 import licenta.backend.model.validator.UserValidator;
-import org.springframework.stereotype.Service;
 import licenta.backend.repository.UserRepository;
+import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @AllArgsConstructor
 @Service
-public class UserService implements UserServiceInterface{
+public class UserService implements UserServiceInterface, UserDetailsService {
     private final UserRepository userRepository;
 
     private final UserValidator userValidator;
@@ -33,7 +37,7 @@ public class UserService implements UserServiceInterface{
 
     public void deleteUser(Long id) throws UserException {
         if (userRepository.findById(id).isEmpty()) {
-            throw new UserException("Utilizatorul cu id="+id+" nu exista");
+            throw new UserException("Utilizatorul cu id=" + id + " nu exista");
         }
         Optional<User> userFromRepository = userRepository.findById(id);
         userFromRepository.ifPresent(userRepository::delete);
@@ -43,14 +47,14 @@ public class UserService implements UserServiceInterface{
 
         Optional<User> optUser = userRepository.findById(id);
         if (optUser.isEmpty()) {
-            throw new UserException("Utilizatorul cu id="+id+" nu exista");
+            throw new UserException("Utilizatorul cu id=" + id + " nu exista");
         }
 
         userValidator.validateEmail(user.getEmail());
         userValidator.validatePhoneNumber(user.getPhoneNumber());
 
-        var userWithPhone=userRepository.findUserByPhoneNumber(user.getPhoneNumber());
-        if (userWithPhone.isPresent()&& userWithPhone.get().getId()!=id) {
+        var userWithPhone = userRepository.findUserByPhoneNumber(user.getPhoneNumber());
+        if (userWithPhone.isPresent() && userWithPhone.get().getId() != id) {
             throw new UserException("Acest numar de telefon aparține deja unui utilizator inregistrat");
         }
 
@@ -63,9 +67,9 @@ public class UserService implements UserServiceInterface{
         return userRepository.findAll();
     }
 
-    public User getUserById(Long id) throws UserException{
+    public User getUserById(Long id) throws UserException {
         if (userRepository.findById(id).isEmpty()) {
-            throw new UserException("Utilizatorul cu id"+id+" nu exista");
+            throw new UserException("Utilizatorul cu id" + id + " nu exista");
         }
 
         if (userRepository.findById(id).isPresent()) {
@@ -75,9 +79,23 @@ public class UserService implements UserServiceInterface{
     }
 
     public User getUserByEmail(String email) throws UserException {
-        if (userRepository.findUserByEmail(email).isEmpty()) {
+        Optional<User> user = userRepository.findUserByEmail(email);
+        if (user.isEmpty()) {
             throw new UserException("Utilizatorul cu acest e-mail nu exista");
+        } else {
+            return user.get();
         }
-        return userRepository.findUserByEmail(email).get();
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<User> userOptional = userRepository.findUserByEmail(username);
+        if (userOptional.isEmpty()) {
+            throw new UsernameNotFoundException("Invalid username or password");
+        }
+
+        User user = userOptional.get();
+        return new org.springframework.security.core.userdetails.User(user.getEmail(),
+                user.getPassword(), new ArrayList<>());
     }
 }

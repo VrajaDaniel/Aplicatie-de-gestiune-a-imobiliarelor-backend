@@ -15,5 +15,4 @@ public class UserRequestBody {
     private String phoneNumber;
     private String email;
     private String password;
-    private String role;
 }
