@@ -1,5 +1,6 @@
 package licenta.backend.service;
 
+import licenta.backend.dto.post.PostResponseBody;
 import licenta.backend.model.Location;
 import licenta.backend.model.Post;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,5 +17,5 @@ public interface PostServiceInterface {
 
     Location getPostLocation(Long postId);
 
-    Post getPostById(Long postId);
+    PostResponseBody getPostById(Long postId);
 }

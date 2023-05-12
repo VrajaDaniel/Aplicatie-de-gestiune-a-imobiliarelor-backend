@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.mail.MessagingException;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -39,7 +38,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    ResponseEntity<Object> login(@RequestBody AuthenticationRequest authenticationRequest) {
+    public ResponseEntity<Object> login(@RequestBody AuthenticationRequest authenticationRequest) {
         String email = authenticationRequest.getUserName();
         String password = authenticationRequest.getPassword();
         User user;
@@ -56,13 +55,19 @@ public class AuthenticationController {
         return new ResponseEntity<>(getUserDTOWithToken(user), HttpStatus.OK);
     }
 
+    @GetMapping("/isLoggedIn")
+    public ResponseEntity isLoggedIn() {
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @GetMapping("/logout/{email}")
-    ResponseEntity<String> logout(@PathVariable String email) {
+    public ResponseEntity<String> logout(@PathVariable String email) {
         return new ResponseEntity<>("Logged out successfully!", HttpStatus.OK);
     }
 
     @PostMapping("/signup")
-    ResponseEntity<String> signup(@RequestBody UserRequestBody userCredentials) {
+    public ResponseEntity<String> signup(@RequestBody UserRequestBody userCredentials) {
         User user = modelMapper.map(userCredentials, User.class);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         try {
@@ -104,5 +109,4 @@ public class AuthenticationController {
                 .signWith(SignatureAlgorithm.HS512,
                         secretKey.getBytes()).compact();
     }
-
 }

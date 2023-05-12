@@ -2,7 +2,6 @@ package licenta.backend.configuration;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -13,12 +12,12 @@ public class ByteArrayConverter implements AttributeConverter<List<byte[]>, Stri
     @Override
     public String convertToDatabaseColumn(List<byte[]> attribute) {
         // Convert the list of byte arrays to a single string
-        StringBuilder sb = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
         for (byte[] bytes : attribute) {
-            sb.append(Base64.getEncoder().encodeToString(bytes));
-            sb.append(";");
+            stringBuilder.append(Base64.getEncoder().encodeToString(bytes));
+            stringBuilder.append(";");
         }
-        return sb.toString();
+        return stringBuilder.toString();
     }
 
     @Override
@@ -32,5 +31,4 @@ public class ByteArrayConverter implements AttributeConverter<List<byte[]>, Stri
         }
         return byteArrayList;
     }
-
 }

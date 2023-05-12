@@ -16,15 +16,17 @@ public class Main {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins("*")
-                        .allowedMethods("GET","PUT","POST","PATCH","DELETE", "OPTIONS")
+                        .allowedMethods("GET", "PUT", "POST", "PATCH", "DELETE", "OPTIONS")
                         .exposedHeaders("X-Total-Results");
             }
         };
     }
+
     @Bean
     public ModelMapper modelMapper() {
         return new ModelMapper();
     }
+
     public static void main(String[] args) {
         SpringApplication.run(Main.class, args);
     }

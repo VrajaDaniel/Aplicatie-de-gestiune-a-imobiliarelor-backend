@@ -1,19 +1,16 @@
 package licenta.backend.dto.post;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class PostRequestBody {
 
     private String title;
     private String description;
-    private String date;
     private String city;
     private double price;
     private double usefulSurface;

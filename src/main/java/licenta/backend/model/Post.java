@@ -1,7 +1,6 @@
 package licenta.backend.model;
 
 import jakarta.persistence.*;
-import licenta.backend.configuration.ByteArrayConverter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -43,6 +42,6 @@ public class Post {
     @ManyToOne
     private User user;
 
-    @Convert(converter = ByteArrayConverter.class)
-    private List<byte[]> files;
+    @OneToMany(mappedBy = "post")
+    private List<Image> imagesList;
 }

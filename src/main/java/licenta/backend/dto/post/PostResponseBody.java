@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -24,5 +26,5 @@ public class PostResponseBody {
     private String type;
     private double latitude;
     private double longitude;
-    private long userId;
+    private List<String> images;
 }

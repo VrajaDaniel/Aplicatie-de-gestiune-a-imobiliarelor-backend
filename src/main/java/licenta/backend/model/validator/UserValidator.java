@@ -2,7 +2,6 @@ package licenta.backend.model.validator;
 
 import licenta.backend.model.exception.UserException;
 import org.springframework.stereotype.Component;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
