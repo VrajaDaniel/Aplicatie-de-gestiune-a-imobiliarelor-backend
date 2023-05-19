@@ -26,25 +26,43 @@ public class PostController {
     public final UserService userService;
     private final ModelMapper modelMapper;
 
+    @GetMapping("/userPosts")
+    ResponseEntity<List<PostResponseBody>> getUserPosts() {
+        return new ResponseEntity<>(postService.getPostListByUserId(), HttpStatus.OK);
+    }
+
     @PostMapping(
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
     )
     ResponseEntity<Object> savePost(@RequestPart("files") List<MultipartFile> files, @RequestPart("postRequestBody") String postRequestBody) throws IOException {
-        System.out.println("Controller body:" + postRequestBody);
         ObjectMapper objectMapper = new ObjectMapper();
         PostRequestBody postRequestBody1 = objectMapper.readValue(postRequestBody, PostRequestBody.class);
-        System.out.println("another test" + postRequestBody1.getType() + postRequestBody1.getConstructionYear());
         Post post = modelMapper.map(postRequestBody1, Post.class);
         post.setLocation(new Location(postRequestBody1.getLatitude(), postRequestBody1.getLongitude()));
 
-        postService.addPost(files, post);
-
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(postService.addPost(files, post), HttpStatus.OK);
     }
 
-    @GetMapping("/userPosts")
-    ResponseEntity<List<PostResponseBody>> getUserPosts() {
-        return new ResponseEntity<>(postService.getPostListByUserId(), HttpStatus.OK);
+    @PutMapping(path = "/{id}",
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
+    )
+    ResponseEntity<Object> updatePost(@PathVariable Long id,
+                                      @RequestPart("files") List<MultipartFile> files,
+                                      @RequestPart("postRequestBody") String postRequestBody) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        PostRequestBody postRequestBody1 = objectMapper.readValue(postRequestBody, PostRequestBody.class);
+        Post post = modelMapper.map(postRequestBody1, Post.class);
+        post.setLocation(new Location(postRequestBody1.getLatitude(), postRequestBody1.getLongitude()));
+        post.setId(id);
+
+        return new ResponseEntity<>(postService.editPost(files,id,post),HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}" )
+    ResponseEntity<Object> deletePost(@PathVariable Long id){
+
+        postService.deletePost(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -56,25 +74,5 @@ public class PostController {
 
         return ResponseEntity.ok(postResponseBody);
     }
-
-
-//    @GetMapping("/getAll")
-//    ResponseEntity<List<PostRequestBody>> getPosts() {
-//        return postService.getAll(requestParams)
-//                .stream()
-//                .map(post -> PostDTO.convertToDTO(post, modelMapper))
-//                .collect(Collectors.toList());
-//    }
-//
-//    @GetMapping("/getMyPosts")
-//    List<PostResponseBody> getUserPosts() {
-//        String userId = (String) SecurityContextHolder.getContext().getAuthentication()
-//                .getPrincipal();
-//        return postService.getUserPosts(Long.parseLong(userId))
-//                .stream()
-//                .map(post -> PostDTO.convertToDTO(post, modelMapper))
-//                .collect(Collectors.toList());
-//    }
-
 
 }

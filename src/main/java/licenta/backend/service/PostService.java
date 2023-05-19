@@ -15,7 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +58,7 @@ public class PostService implements PostServiceInterface {
             List<Post> postList = postRepository.findAllByUser(user.get());
 
             for (Post post : postList) {
-                PostResponseBody postResponseBody = postMapper.mapPostResponseBodyToPost(post);
+                PostResponseBody postResponseBody = postMapper.mapPostToPostResponseBody(post);
                 postResponseBodyList.add(postResponseBody);
             }
         }
@@ -69,13 +68,13 @@ public class PostService implements PostServiceInterface {
 
     @Transactional
     public List<Post> findAll() {
-
         return postRepository.findAll();
     }
 
     @Override
     @Transactional
-    public Post editPost(Long postId, Post edited) {
+    public Post editPost(List<MultipartFile> multipartFileList,Long postId, Post edited) {
+
         Optional<Post> optPost = postRepository.findById(postId);
         if (optPost.isEmpty()) {
             return null;
@@ -93,8 +92,18 @@ public class PostService implements PostServiceInterface {
         toUpdate.setType(edited.getType());
         toUpdate.setNumberRooms(edited.getNumberRooms());
         toUpdate.setConstructionYear(edited.getConstructionYear());
-        postRepository.save(toUpdate);
-        return toUpdate;
+
+        imageRepository.deleteAll(toUpdate.getImagesList());
+        Post savedPost = postRepository.save(toUpdate);
+        List<byte[]> imageByteList = convertToByteList(multipartFileList);
+        for (byte[] image : imageByteList) {
+            Image image1 = new Image();
+            image1.setFile(image);
+            image1.setPost(savedPost);
+            imageRepository.save(image1);
+        }
+        savedPost.setImagesList(imageRepository.findAll());
+        return savedPost;
     }
 
     @Override
@@ -104,6 +113,7 @@ public class PostService implements PostServiceInterface {
             return null;
         }
         Post toDelete = optPost.get();
+        imageRepository.deleteAll(toDelete.getImagesList());
         postRepository.delete(toDelete);
         return toDelete;
     }
@@ -123,10 +133,9 @@ public class PostService implements PostServiceInterface {
 
         Optional<Post> post = postRepository.findById(postId);
         if(post.isPresent()) {
-            return postMapper.mapPostResponseBodyToPost(post.get());
+            return postMapper.mapPostToPostResponseBody(post.get());
         }
         return null;
-
 }
 
     private List<byte[]> convertToByteList(List<MultipartFile> multipartFileList) {

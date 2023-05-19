@@ -11,7 +11,7 @@ import java.util.List;
 public interface PostServiceInterface {
     Post addPost(List<MultipartFile> file, Post post) throws IOException;
 
-    Post editPost(Long postId, Post edited);
+    Post editPost(List<MultipartFile> file,Long postId, Post edited);
 
     Post deletePost(Long postId);
 
