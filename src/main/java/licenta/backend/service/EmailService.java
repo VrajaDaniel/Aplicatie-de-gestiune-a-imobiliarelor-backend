@@ -1,7 +1,6 @@
 package licenta.backend.service;
 
 import org.springframework.stereotype.Component;
-
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
@@ -19,6 +18,7 @@ public class EmailService implements EmailServiceInterface {
         prop.put("mail.smtp.auth", true);
         prop.put("mail.smtp.host", "smtp-relay.sendinblue.com");
         prop.put("mail.smtp.port", "587");
+
         Session session = Session.getInstance(prop, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
@@ -27,7 +27,8 @@ public class EmailService implements EmailServiceInterface {
             }
         });
         Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress("petrescue.org@gmail.com"));
+
+        message.setFrom(new InternetAddress("AnunturiImobiliare.org@gmail.com"));
         message.setRecipients(
                 Message.RecipientType.TO, InternetAddress.parse(userEmailAccount));
         message.setSubject("Account created successfully");

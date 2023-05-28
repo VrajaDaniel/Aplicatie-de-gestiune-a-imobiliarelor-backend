@@ -26,7 +26,6 @@ public class PostService implements PostServiceInterface {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final ImageRepository imageRepository;
-
     private final PostMapper postMapper;
 
     @Override
@@ -73,7 +72,7 @@ public class PostService implements PostServiceInterface {
 
     @Override
     @Transactional
-    public Post editPost(List<MultipartFile> multipartFileList,Long postId, Post edited) {
+    public Post editPost(List<MultipartFile> multipartFileList, Long postId, Post edited) {
 
         Optional<Post> optPost = postRepository.findById(postId);
         if (optPost.isEmpty()) {
@@ -132,11 +131,11 @@ public class PostService implements PostServiceInterface {
     public PostResponseBody getPostById(Long postId) {
 
         Optional<Post> post = postRepository.findById(postId);
-        if(post.isPresent()) {
+        if (post.isPresent()) {
             return postMapper.mapPostToPostResponseBody(post.get());
         }
         return null;
-}
+    }
 
     private List<byte[]> convertToByteList(List<MultipartFile> multipartFileList) {
         List<byte[]> fileDataList = new ArrayList<>();
@@ -159,5 +158,17 @@ public class PostService implements PostServiceInterface {
             userId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         }
         return userId;
+    }
+
+    public List<PostResponseBody> getPosts() {
+        List<PostResponseBody> postResponseBodyList = new ArrayList<>();
+        List<Post> postList = postRepository.findAll();
+
+        for (Post post : postList) {
+            PostResponseBody postResponseBody = postMapper.mapPostToPostResponseBody(post);
+            postResponseBodyList.add(postResponseBody);
+        }
+
+        return postResponseBodyList;
     }
 }
