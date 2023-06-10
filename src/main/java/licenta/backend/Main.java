@@ -32,8 +32,6 @@ public class Main {
 
     public static void main(String[] args) throws MessagingException {
         SpringApplication.run(Main.class, args);
-        //EmailService emailService = new EmailService();
-        //emailService.sendEmail("vraja_daniel@yahoo.com");
     }
 
 }

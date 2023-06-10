@@ -30,21 +30,21 @@ public class PostService implements PostServiceInterface {
 
     @Override
     @Transactional
-    public Post addPost(List<MultipartFile> multipartFileList, Post post) throws IOException {
+    public PostResponseBody addPost(List<MultipartFile> multipartFileList, Post post) throws IOException {
         String userId = getUserIdFromSecurityContext();
 
         List<byte[]> imageByteList = convertToByteList(multipartFileList);
         post.setUser(userRepository.findById(Long.parseLong(userId)).get());
-
+        List<Image> imageList=new ArrayList<>();
         Post savedPost = postRepository.save(post);
         for (byte[] image : imageByteList) {
             Image image1 = new Image();
             image1.setFile(image);
             image1.setPost(savedPost);
-            imageRepository.save(image1);
+            imageList.add(imageRepository.save(image1));
         }
-        savedPost.setImagesList(imageRepository.findAll());
-        return savedPost;
+        savedPost.setImagesList(imageList);
+        return postMapper.mapPostToPostResponseBody(savedPost);
     }
 
     @Transactional
@@ -72,7 +72,7 @@ public class PostService implements PostServiceInterface {
 
     @Override
     @Transactional
-    public Post editPost(List<MultipartFile> multipartFileList, Long postId, Post edited) {
+    public PostResponseBody editPost(List<MultipartFile> multipartFileList, Long postId, Post edited) {
 
         Optional<Post> optPost = postRepository.findById(postId);
         if (optPost.isEmpty()) {
@@ -81,7 +81,6 @@ public class PostService implements PostServiceInterface {
         Post toUpdate = optPost.get();
         toUpdate.setTitle(edited.getTitle());
         toUpdate.setDescription(edited.getDescription());
-        toUpdate.setDate(edited.getDate());
         toUpdate.setCity(edited.getCity());
         toUpdate.setPrice(edited.getPrice());
         toUpdate.setUsefulSurface(edited.getUsefulSurface());
@@ -95,14 +94,16 @@ public class PostService implements PostServiceInterface {
         imageRepository.deleteAll(toUpdate.getImagesList());
         Post savedPost = postRepository.save(toUpdate);
         List<byte[]> imageByteList = convertToByteList(multipartFileList);
+        List<Image> imageList = new ArrayList<>();
         for (byte[] image : imageByteList) {
             Image image1 = new Image();
             image1.setFile(image);
             image1.setPost(savedPost);
-            imageRepository.save(image1);
+            imageList.add(imageRepository.save(image1));
         }
-        savedPost.setImagesList(imageRepository.findAll());
-        return savedPost;
+        savedPost.setImagesList(imageList);
+
+         return postMapper.mapPostToPostResponseBody(savedPost);
     }
 
     @Override

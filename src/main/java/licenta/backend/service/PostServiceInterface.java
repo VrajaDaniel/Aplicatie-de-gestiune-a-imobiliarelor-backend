@@ -9,9 +9,9 @@ import java.io.IOException;
 import java.util.List;
 
 public interface PostServiceInterface {
-    Post addPost(List<MultipartFile> file, Post post) throws IOException;
+    PostResponseBody addPost(List<MultipartFile> file, Post post) throws IOException;
 
-    Post editPost(List<MultipartFile> file,Long postId, Post edited);
+    PostResponseBody editPost(List<MultipartFile> file, Long postId, Post edited);
 
     Post deletePost(Long postId);
 

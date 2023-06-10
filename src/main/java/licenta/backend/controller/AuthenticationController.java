@@ -17,7 +17,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import javax.mail.MessagingException;
+
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,11 +30,11 @@ public class AuthenticationController {
     private EmailService emailService;
 
     @Autowired
-    public AuthenticationController(UserService userService, PasswordEncoder passwordEncoder, ModelMapper modelMapper,EmailService emailService) {
+    public AuthenticationController(UserService userService, PasswordEncoder passwordEncoder, ModelMapper modelMapper, EmailService emailService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.modelMapper = modelMapper;
-        this.emailService=emailService;
+        this.emailService = emailService;
     }
 
     @PostMapping("/login")
@@ -76,11 +76,7 @@ public class AuthenticationController {
             return new ResponseEntity<>("",
                     HttpStatus.BAD_REQUEST);
         }
-        try {
-            emailService.sendEmail(user.getEmail());
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
+
         return new ResponseEntity<>("Signup successful", HttpStatus.OK);
     }
 
@@ -93,9 +89,22 @@ public class AuthenticationController {
 
     private String getJWTToken(Long id) {
         String secretKey = "mySecretKey";
-        List<GrantedAuthority> grantedAuthorities = AuthorityUtils
-                .commaSeparatedStringToAuthorityList("ROLE_USER");
+        User user = null;
+        try {
+            user = userService.getUserById(id);
+        } catch (UserException e) {
+            throw new RuntimeException(e);
+        }
+        List<GrantedAuthority> grantedAuthorities;
 
+        if(user.getRole()!=null && user.getRole().equals("ADMIN")){
+            grantedAuthorities = AuthorityUtils
+                    .commaSeparatedStringToAuthorityList("ROLE_USER,ROLE_ADMIN");
+        }
+        else {
+            grantedAuthorities = AuthorityUtils
+                    .commaSeparatedStringToAuthorityList("ROLE_USER");
+        }
         return Jwts
                 .builder()
                 .setId("softtekJWT")

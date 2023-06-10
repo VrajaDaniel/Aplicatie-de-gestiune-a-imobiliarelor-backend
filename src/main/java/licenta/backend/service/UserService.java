@@ -31,7 +31,7 @@ public class UserService implements UserServiceInterface, UserDetailsService {
         if (userRepository.findUserByEmail(user.getEmail()).isPresent()) {
             throw new UserException("Acest e-mail aparține deja unui utilizator înregistrat!");
         }
-
+        user.setRole("USER");
         return userRepository.save(user);
     }
 

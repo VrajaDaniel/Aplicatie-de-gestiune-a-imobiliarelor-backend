@@ -28,6 +28,7 @@ public class PostMapper {
         postResponseBody.setLongitude(post.getLocation().getLongitude());
         postResponseBody.setPrice(post.getPrice());
         postResponseBody.setImages(imageList);
+        postResponseBody.setDate(post.getDate().toString());
 
         return postResponseBody;
     }
