@@ -2,10 +2,10 @@ package licenta.backend.service;
 
 import licenta.backend.dto.post.PostResponseBody;
 import licenta.backend.model.Image;
-import licenta.backend.model.Location;
 import licenta.backend.model.Post;
 import licenta.backend.model.User;
 import licenta.backend.repository.ImageRepository;
+import licenta.backend.repository.LikeRepository;
 import licenta.backend.repository.PostRepository;
 import licenta.backend.repository.UserRepository;
 import licenta.backend.service.mapper.PostMapper;
@@ -26,17 +26,33 @@ public class PostService implements PostServiceInterface {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final ImageRepository imageRepository;
+    private final LikeRepository likeRepository;
     private final PostMapper postMapper;
 
-    @Override
-    @Transactional
-    public PostResponseBody addPost(List<MultipartFile> multipartFileList, Post post) throws IOException {
-        String userId = getUserIdFromSecurityContext();
+    private List<byte[]> convertToByteList(List<MultipartFile> multipartFileList) {
+        List<byte[]> fileDataList = new ArrayList<>();
+        for (MultipartFile file : multipartFileList) {
+            try {
+                byte[] fileData = file.getBytes();
+                fileDataList.add(fileData);
+            } catch (IOException e) {
+                fileDataList.add(new byte[0]);
+            }
+        }
 
-        List<byte[]> imageByteList = convertToByteList(multipartFileList);
-        post.setUser(userRepository.findById(Long.parseLong(userId)).get());
-        List<Image> imageList=new ArrayList<>();
-        Post savedPost = postRepository.save(post);
+        return fileDataList;
+    }
+
+    private String getUserIdFromSecurityContext() {
+        String userId = "";
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            userId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        }
+        return userId;
+    }
+
+    private PostResponseBody getPostResponseBody(List<byte[]> imageByteList, List<Image> imageList, Post savedPost) {
         for (byte[] image : imageByteList) {
             Image image1 = new Image();
             image1.setFile(image);
@@ -47,6 +63,19 @@ public class PostService implements PostServiceInterface {
         return postMapper.mapPostToPostResponseBody(savedPost);
     }
 
+    @Override
+    @Transactional
+    public PostResponseBody addPost(List<MultipartFile> multipartFileList, Post post) {
+        String userId = getUserIdFromSecurityContext();
+        List<byte[]> imageByteList = convertToByteList(multipartFileList);
+        post.setUser(userRepository.findById(Long.parseLong(userId)).get());
+        List<Image> imageList = new ArrayList<>();
+        Post savedPost = postRepository.save(post);
+
+        return getPostResponseBody(imageByteList, imageList, savedPost);
+    }
+
+    @Override
     @Transactional
     public List<PostResponseBody> getPostListByUserId() {
         String userId = getUserIdFromSecurityContext();
@@ -63,11 +92,6 @@ public class PostService implements PostServiceInterface {
         }
 
         return postResponseBodyList;
-    }
-
-    @Transactional
-    public List<Post> findAll() {
-        return postRepository.findAll();
     }
 
     @Override
@@ -95,15 +119,8 @@ public class PostService implements PostServiceInterface {
         Post savedPost = postRepository.save(toUpdate);
         List<byte[]> imageByteList = convertToByteList(multipartFileList);
         List<Image> imageList = new ArrayList<>();
-        for (byte[] image : imageByteList) {
-            Image image1 = new Image();
-            image1.setFile(image);
-            image1.setPost(savedPost);
-            imageList.add(imageRepository.save(image1));
-        }
-        savedPost.setImagesList(imageList);
 
-         return postMapper.mapPostToPostResponseBody(savedPost);
+        return getPostResponseBody(imageByteList, imageList, savedPost);
     }
 
     @Override
@@ -119,57 +136,24 @@ public class PostService implements PostServiceInterface {
     }
 
     @Override
-    public Location getPostLocation(Long postId) {
-        Optional<Post> post = postRepository.findById(postId);
-        Location location = null;
-        if (post.isPresent()) {
-            location = post.get().getLocation();
-        }
-        return location;
-    }
-
-    @Override
     public PostResponseBody getPostById(Long postId) {
 
         Optional<Post> post = postRepository.findById(postId);
-        if (post.isPresent()) {
-            return postMapper.mapPostToPostResponseBody(post.get());
-        }
-        return null;
+        return post.map(postMapper::mapPostToPostResponseBody).orElse(null);
     }
 
-    private List<byte[]> convertToByteList(List<MultipartFile> multipartFileList) {
-        List<byte[]> fileDataList = new ArrayList<>();
-        for (MultipartFile file : multipartFileList) {
-            try {
-                byte[] fileData = file.getBytes();
-                fileDataList.add(fileData);
-            } catch (IOException e) {
-                fileDataList.add(new byte[0]);
-            }
-        }
-
-        return fileDataList;
-    }
-
-    private String getUserIdFromSecurityContext() {
-        String userId = "";
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            userId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        }
-        return userId;
-    }
-
+    @Override
     public List<PostResponseBody> getPosts() {
         List<PostResponseBody> postResponseBodyList = new ArrayList<>();
         List<Post> postList = postRepository.findAll();
 
         for (Post post : postList) {
             PostResponseBody postResponseBody = postMapper.mapPostToPostResponseBody(post);
+            postResponseBody.setLikeNumber(likeRepository.countByPostId(post.getId()));
             postResponseBodyList.add(postResponseBody);
         }
 
         return postResponseBodyList;
     }
+
 }

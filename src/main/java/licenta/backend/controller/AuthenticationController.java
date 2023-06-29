@@ -7,35 +7,28 @@ import licenta.backend.dto.user.UserRequestBody;
 import licenta.backend.dto.user.UserResponseBody;
 import licenta.backend.model.User;
 import licenta.backend.model.exception.UserException;
-import licenta.backend.service.EmailService;
-import licenta.backend.service.UserService;
+import licenta.backend.service.UserServiceInterface;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@AllArgsConstructor
 public class AuthenticationController {
-    private UserService userService;
-    private PasswordEncoder passwordEncoder;
-    private ModelMapper modelMapper;
-    private EmailService emailService;
-
-    @Autowired
-    public AuthenticationController(UserService userService, PasswordEncoder passwordEncoder, ModelMapper modelMapper, EmailService emailService) {
-        this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
-        this.modelMapper = modelMapper;
-        this.emailService = emailService;
-    }
+    private final UserServiceInterface userService;
+    private final PasswordEncoder passwordEncoder;
+    private final ModelMapper modelMapper;
 
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody AuthenticationRequest authenticationRequest) {
@@ -45,25 +38,20 @@ public class AuthenticationController {
         try {
             user = userService.getUserByEmail(email);
         } catch (UserException e) {
-            return new ResponseEntity<>("Invalid email!",
+            return new ResponseEntity<>("Email invalid!",
                     HttpStatus.UNAUTHORIZED);
         }
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            return new ResponseEntity<>("Invalid password!",
+            return new ResponseEntity<>("Parola invalida!",
                     HttpStatus.UNAUTHORIZED);
         }
         return new ResponseEntity<>(getUserDTOWithToken(user), HttpStatus.OK);
     }
 
     @GetMapping("/isLoggedIn")
-    public ResponseEntity isLoggedIn() {
+    public ResponseEntity<String> isLoggedIn() {
 
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @GetMapping("/logout/{email}")
-    public ResponseEntity<String> logout(@PathVariable String email) {
-        return new ResponseEntity<>("Logged out successfully!", HttpStatus.OK);
+        return new ResponseEntity<>("Userul e logat", HttpStatus.OK);
     }
 
     @PostMapping("/signup")
@@ -76,8 +64,7 @@ public class AuthenticationController {
             return new ResponseEntity<>("",
                     HttpStatus.BAD_REQUEST);
         }
-
-        return new ResponseEntity<>("Signup successful", HttpStatus.OK);
+        return new ResponseEntity<>("Contul a fost creeat cu succes", HttpStatus.OK);
     }
 
     private UserResponseBody getUserDTOWithToken(User user) {
@@ -89,7 +76,7 @@ public class AuthenticationController {
 
     private String getJWTToken(Long id) {
         String secretKey = "mySecretKey";
-        User user = null;
+        User user;
         try {
             user = userService.getUserById(id);
         } catch (UserException e) {
@@ -97,11 +84,10 @@ public class AuthenticationController {
         }
         List<GrantedAuthority> grantedAuthorities;
 
-        if(user.getRole()!=null && user.getRole().equals("ADMIN")){
+        if (user.getRole() != null && user.getRole().equals("ADMIN")) {
             grantedAuthorities = AuthorityUtils
                     .commaSeparatedStringToAuthorityList("ROLE_USER,ROLE_ADMIN");
-        }
-        else {
+        } else {
             grantedAuthorities = AuthorityUtils
                     .commaSeparatedStringToAuthorityList("ROLE_USER");
         }
@@ -113,6 +99,7 @@ public class AuthenticationController {
                         grantedAuthorities.stream()
                                 .map(GrantedAuthority::getAuthority)
                                 .collect(Collectors.toList()))
+                .claim("userId", id)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + (864000 * 1000)))
                 .signWith(SignatureAlgorithm.HS512,

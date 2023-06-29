@@ -5,8 +5,8 @@ import licenta.backend.dto.post.PostRequestBody;
 import licenta.backend.dto.post.PostResponseBody;
 import licenta.backend.model.Location;
 import licenta.backend.model.Post;
-import licenta.backend.service.PostService;
-import licenta.backend.service.UserService;
+import licenta.backend.service.PostServiceInterface;
+import licenta.backend.service.UserServiceInterface;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -21,8 +21,8 @@ import java.util.List;
 @RequestMapping("/post")
 @AllArgsConstructor
 public class PostController {
-    public final PostService postService;
-    public final UserService userService;
+    public final PostServiceInterface postService;
+    public final UserServiceInterface userService;
     private final ModelMapper modelMapper;
 
     @GetMapping("/userPosts")
@@ -78,5 +78,4 @@ public class PostController {
 
         return ResponseEntity.ok(postResponseBody);
     }
-
 }

@@ -1,10 +1,8 @@
 package licenta.backend.service;
 
 import licenta.backend.dto.post.PostResponseBody;
-import licenta.backend.model.Location;
 import licenta.backend.model.Post;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -15,7 +13,9 @@ public interface PostServiceInterface {
 
     Post deletePost(Long postId);
 
-    Location getPostLocation(Long postId);
-
     PostResponseBody getPostById(Long postId);
+
+    List<PostResponseBody> getPostListByUserId();
+
+    List<PostResponseBody> getPosts();
 }

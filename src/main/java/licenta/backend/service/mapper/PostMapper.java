@@ -36,10 +36,8 @@ public class PostMapper {
     private List<String> convertByteToBase64(List<Image> filesByteList) {
         List<String> base64StringList=new ArrayList<>();
         for (Image fileData : filesByteList) {
-
             base64StringList.add(Base64.getEncoder().encodeToString(fileData.getFile()));
         }
         return base64StringList;
     }
-
 }

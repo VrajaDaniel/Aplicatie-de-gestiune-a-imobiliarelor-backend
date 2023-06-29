@@ -31,5 +31,4 @@ public class UserValidator {
             throw new UserException("Numar de telefon invalid");
         }
     }
-
 }

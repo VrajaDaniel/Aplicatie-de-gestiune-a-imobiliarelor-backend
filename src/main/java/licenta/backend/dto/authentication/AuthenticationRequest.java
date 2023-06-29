@@ -11,6 +11,6 @@ import lombok.Setter;
 @Setter
 public class AuthenticationRequest {
 
-    public String userName;
-    public String password;
+    private String userName;
+    private String password;
 }
